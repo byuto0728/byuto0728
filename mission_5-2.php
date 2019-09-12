@@ -20,7 +20,7 @@
 
 		$sql = "CREATE TABLE IF NOT EXISTS mission_5" //テーブルの作成
 		." ("
-		. "id INT," //id:カラム名　INT：データ型　AUTO～:自動的に1ずつ増える設定
+		. "id INT AUTO_INCREMENT PRIMARY KEY," //id:カラム名　INT：データ型　AUTO～:自動的に1ずつ増える設定
 		. "name char(32)," //名前の設定
 		. "comment TEXT," //コメントの設定
 		. "date TIMESTAMP,"
@@ -84,12 +84,7 @@
 					$Reception="投稿番号".$edit_number."の内容を編集しました。"."<br>";
 				//※編集しないときの処理
 				}elseif(empty($edit_number)){
-					$sql = 'SELECT * FROM mission_5 '; //SELECT *(すべて)　テーブルtbtestの全てのデータを表示
-					$stmt = $pdo->query($sql);
-					$results = $stmt->fetchAll();
-					$number=count($results)+1;
-					$sql = $pdo -> prepare("INSERT INTO mission_5 (id, name, comment , date , password) VALUES (:id, :name, :comment, :date , :password)"); //名前とコメントをテーブルに入れる準備　prepareはquaryと違い、何回もデータを入れたいときに良い
-					$sql -> bindParam(':id', $id, PDO::PARAM_INT);
+					$sql = $pdo -> prepare("INSERT INTO mission_5 (name, comment , date , password) VALUES (:name, :comment, :date , :password)"); //名前とコメントをテーブルに入れる準備　prepareはquaryと違い、何回もデータを入れたいときに良い
 					$sql -> bindParam(':name', $name, PDO::PARAM_STR); //名前のデータをテーブルにいれる
 					$sql -> bindParam(':comment', $comment, PDO::PARAM_STR); //コメントのデータをテーブルに入れる設定
 					$sql -> bindParam(':date', $date, PDO::PARAM_STR); //コメントのデータをテーブルに入れる設定
@@ -222,6 +217,9 @@
 					$sql = 'delete from mission_5';
 					$stmt = $pdo->prepare($sql);
 					$stmt->execute();
+					$sql = 'ALTER TABLE mission_5 AUTO_INCREMENT = 1'; //ここから↓3文は管理者権限でテーブルがリセットされたとき、
+					$stmt = $pdo->prepare($sql);				//idをもう一度1から振り直す処理	
+					$stmt->execute();
 					$Reception="テーブルを削除しました。"."<br>";
 				}else{
 					$Error_4="管理者フォームのエラーです。."."<br>"."パスワードが違います。"."<br>";
@@ -242,7 +240,7 @@
 	</div>
 	<hr>
 	
-	//フォーム内容
+	<!--フォーム内容-->
 	<form action="mission_5-2.php" method="post">
 	<p> 【　投稿用フォーム　】 </p>
 	<p> お名前：
